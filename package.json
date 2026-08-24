@@ -1,0 +1,17 @@
+{
+  "name": "provenance-9-evidence-viewer",
+  "version": "0.1.0",
+  "description": "Local, read-only evidence viewer for Provenance•9",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0 <25",
+    "npm": ">=11.0.0 <12"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test test/*.test.js",
+    "check": "node --check src/server.js && node --check public/app.js && npm test"
+  }
+}

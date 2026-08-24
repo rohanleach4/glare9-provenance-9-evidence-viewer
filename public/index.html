@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <title>Provenance•9 Evidence Viewer</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <header class="masthead">
+      <a class="brand" href="/" aria-label="Provenance 9 home">
+        <span class="brand-mark" aria-hidden="true">P•9</span>
+        <span><strong>Provenance•9</strong><small>BY GLARE•9</small></span>
+      </a>
+      <div class="local-pill"><span></span> Local · read only</div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <p class="eyebrow">GOVERNANCE EVIDENCE, MADE LEGIBLE</p>
+        <h1>Provenance•9<br><em>Evidence Viewer</em></h1>
+        <p class="lede">Inspect sealed ledger evidence on this computer. Cryptographic validity, signer trust and chain continuity are reported separately—because they prove different things.</p>
+        <div class="actions">
+          <label class="button primary" for="segment-input">Open evidence</label>
+          <input id="segment-input" type="file" accept=".g9p,application/octet-stream" multiple hidden>
+          <label class="button secondary" for="trust-input">Load trust bundle</label>
+          <input id="trust-input" type="file" accept=".json,application/json" hidden>
+          <button class="button ghost" id="export-button" type="button" disabled>Export evidence pack</button>
+        </div>
+        <p class="privacy-note">Files stay on this device. The viewer has no remote connection and does not alter source evidence.</p>
+      </section>
+
+      <section id="empty-state" class="drop-zone" aria-labelledby="drop-title">
+        <div class="seal" aria-hidden="true">9</div>
+        <h2 id="drop-title">Open sealed evidence</h2>
+        <p>Choose or drop one or more <code>.g9p</code> segment files here.</p>
+        <p class="muted">A trust bundle is optional, but without one signer trust cannot be assessed.</p>
+      </section>
+
+      <section id="workspace" class="workspace" hidden>
+        <div class="summary-grid" aria-label="Evidence summary">
+          <article><span>Segments</span><strong id="segment-count">0</strong><small id="segment-size">—</small></article>
+          <article><span>Records</span><strong id="record-count">0</strong><small>Human-readable events</small></article>
+          <article><span>Cryptography</span><strong id="crypto-status" class="status-text">—</strong><small>Signatures & commitments</small></article>
+          <article><span>Signer trust</span><strong id="trust-status" class="status-text">—</strong><small id="trust-bundle-label">No bundle loaded</small></article>
+          <article><span>Continuity</span><strong id="chain-status" class="status-text">—</strong><small>Within supplied evidence</small></article>
+        </div>
+
+        <div id="limitations" class="notice" role="note">
+          <strong>What this proves</strong>
+          <span>Verification proves the integrity of the supplied recorded history—not that an event was factually true or that the supplied history is complete.</span>
+        </div>
+
+        <div class="viewer-grid">
+          <aside class="record-list-panel">
+            <div class="panel-heading">
+              <div><p class="eyebrow">RECORDED HISTORY</p><h2>Evidence records</h2></div>
+              <button id="clear-button" class="text-button" type="button">Clear</button>
+            </div>
+            <label class="search"><span class="sr-only">Search records</span><input id="search-input" type="search" placeholder="Search subject, type, source…"></label>
+            <div id="record-list" class="record-list"></div>
+          </aside>
+
+          <article id="record-detail" class="record-detail">
+            <p class="eyebrow">SELECTED RECORD</p>
+            <h2>Choose an evidence record</h2>
+            <p class="muted">Its complete human-readable content will appear here.</p>
+          </article>
+        </div>
+
+        <details class="technical-panel">
+          <summary>Segment verification details</summary>
+          <div id="segment-list"></div>
+        </details>
+      </section>
+    </main>
+
+    <footer><span>Provenance•9 Evidence Viewer</span><span>Local verification · No telemetry</span></footer>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
