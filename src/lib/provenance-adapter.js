@@ -1,28 +1,23 @@
-import { access } from "node:fs/promises";
-import path from "node:path";
-import { pathToFileURL } from "node:url";
+import { verifyG9pBytes } from "../vendor/provenance-verify.js";
+import { evaluateSegmentTrust, validateSegmentTrustBundle } from "../vendor/signer-trust.js";
 
-let loaded;
-
-export async function loadProvenanceVerifier({ viewerRoot, corePath = process.env.G9P_CORE_PATH } = {}) {
-  if (loaded !== undefined) return loaded;
-
-  const resolvedCore = path.resolve(corePath ?? path.join(viewerRoot, "..", "Glare9-Provenance"));
-  const verifierPath = path.join(resolvedCore, "src", "verify.js");
-  await access(verifierPath);
-  const verifier = await import(pathToFileURL(verifierPath).href);
-
-  for (const name of ["verifySegmentBytes", "validateSegmentTrustBundle", "evaluateSegmentTrust"]) {
-    if (typeof verifier[name] !== "function") {
-      throw new Error(`The configured Provenance core does not export ${name}`);
+const verifier = Object.freeze({
+  source: "bundled-independent-verifier",
+  provenanceVersion: "0.1.0-alpha.2",
+  provenanceCommit: "b8ac0a1614ada09f06766789163b4916e4f2fb48",
+  verifySegmentBytes(bytes) {
+    const result = verifyG9pBytes(bytes);
+    if (result.kind !== "segment") {
+      const error = new Error("The selected .g9p file is not a sealed segment");
+      error.code = "VIEWER_UNSUPPORTED_PROFILE";
+      throw error;
     }
-  }
+    return result;
+  },
+  validateSegmentTrustBundle,
+  evaluateSegmentTrust,
+});
 
-  loaded = Object.freeze({
-    corePath: resolvedCore,
-    verifySegmentBytes: verifier.verifySegmentBytes,
-    validateSegmentTrustBundle: verifier.validateSegmentTrustBundle,
-    evaluateSegmentTrust: verifier.evaluateSegmentTrust,
-  });
-  return loaded;
+export async function loadProvenanceVerifier() {
+  return verifier;
 }

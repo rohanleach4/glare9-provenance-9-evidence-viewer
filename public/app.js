@@ -139,12 +139,16 @@ function render() {
 
 function searchable(item) {
   const event = item.event;
-  return [event.eventId, event.subject, event.type, event.source?.identity, event.source?.kind, event.policyReference, JSON.stringify(event.payload ?? "")].join(" ").toLowerCase();
+  return [event.eventId, event.subject, event.type, event.source?.identity, event.source?.kind, event.policyReference, JSON.stringify(event.payload ?? "")]
+    .join(" ")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, " ");
 }
 
 function renderRecordList() {
-  const query = elements["search-input"].value.trim().toLowerCase();
-  const events = allEvents().filter((item) => !query || searchable(item).includes(query));
+  const query = elements["search-input"].value.trim().toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ");
+  const terms = query.split(/\s+/u).filter(Boolean);
+  const events = allEvents().filter((item) => terms.every((term) => searchable(item).includes(term)));
   elements["record-list"].innerHTML = events.length === 0
     ? '<p class="muted" style="padding:20px">No records match this search.</p>'
     : events.map((item) => {
@@ -203,6 +207,14 @@ function selectEvent(key) {
 async function openSegments(files) {
   const candidates = [...files].filter((file) => file.name.toLowerCase().endsWith(".g9p"));
   if (candidates.length === 0) return toast("Choose one or more .g9p segment files.", true);
+  if (state.segments.length + candidates.length > state.config.limits.maxEvidenceFiles) {
+    return toast(`A session can contain at most ${state.config.limits.maxEvidenceFiles} evidence files.`, true);
+  }
+  const currentBytes = state.segments.reduce((sum, item) => sum + item.bytes.byteLength, 0);
+  const candidateBytes = candidates.reduce((sum, file) => sum + file.size, 0);
+  if (currentBytes + candidateBytes > state.config.limits.maxTotalEvidenceBytes) {
+    return toast(`The selected evidence exceeds the ${formatBytes(state.config.limits.maxTotalEvidenceBytes)} session limit.`, true);
+  }
   let added = 0;
   for (const file of candidates) {
     try {

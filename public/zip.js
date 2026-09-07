@@ -39,14 +39,17 @@ export function buildStoredZip(entries) {
     if (typeof entry.name !== "string" || entry.name.length === 0 || entry.name.startsWith("/") || entry.name.includes("..")) throw new Error("ZIP entry name is unsafe");
     const name = encoder.encode(entry.name);
     const data = entry.bytes instanceof Uint8Array ? entry.bytes : encoder.encode(entry.bytes);
+    if (name.length > 65_535 || data.length > 0xffffffff) throw new Error("ZIP entry exceeds the classic ZIP limits");
     const checksum = crc32(data);
     const local = concat([u32(0x04034b50), u16(20), u16(0), u16(0), u16(0), u16(0), u32(checksum), u32(data.length), u32(data.length), u16(name.length), u16(0), name, data]);
     const central = concat([u32(0x02014b50), u16(20), u16(20), u16(0), u16(0), u16(0), u16(0), u32(checksum), u32(data.length), u32(data.length), u16(name.length), u16(0), u16(0), u16(0), u16(0), u32(0), u32(offset), name]);
     localParts.push(local);
     centralParts.push(central);
     offset += local.length;
+    if (offset > 0xffffffff) throw new Error("ZIP archive exceeds the classic ZIP limit");
   }
 
   const central = concat(centralParts);
+  if (central.length > 0xffffffff || offset + central.length + 22 > 0xffffffff) throw new Error("ZIP archive exceeds the classic ZIP limit");
   return concat([...localParts, central, u32(0x06054b50), u16(0), u16(0), u16(entries.length), u16(entries.length), u32(central.length), u32(offset), u16(0)]);
 }

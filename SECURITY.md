@@ -10,14 +10,14 @@ The server address is deliberately fixed to `127.0.0.1`; exposing the viewer on 
 
 ## Reporting a vulnerability
 
-Please do not disclose a suspected vulnerability in a public issue. Use GitHub private vulnerability reporting once the public repository is available. Until then, report it through Glare•9's published private security contact.
+Please do not disclose a suspected vulnerability in a public issue. Use GitHub private vulnerability reporting or email [hello@glare9.com](mailto:hello@glare9.com) with the subject “Provenance•9 Evidence Viewer security”.
 
 Include the affected version, reproduction steps, impact and any suggested mitigation. Do not include real customer evidence or private keys.
 
 ## Dependency and release policy
 
 - Keep runtime dependencies at the minimum required to verify and present evidence.
-- Pin the official verifier to an exact released version and record supported G9P formats.
+- Pin the bundled independent verifier to an exact signed Provenance•9 release and record supported G9P formats.
 - Pin GitHub Actions to full commit hashes.
 - Give CI no production secrets and only the permissions required for its job.
 - Produce an SBOM and checksums for public releases.

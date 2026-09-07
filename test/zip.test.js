@@ -20,3 +20,7 @@ test("buildStoredZip writes local, central and end records with exact bytes", ()
 test("buildStoredZip rejects traversal entry names", () => {
   assert.throws(() => buildStoredZip([{ name: "../outside", bytes: "no" }]), /unsafe/u);
 });
+
+test("buildStoredZip rejects names outside classic ZIP limits", () => {
+  assert.throws(() => buildStoredZip([{ name: "a".repeat(65_536), bytes: "no" }]), /classic ZIP limits/u);
+});

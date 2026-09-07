@@ -16,16 +16,14 @@ The verifier can answer the first three only within the inputs it receives. It c
 ## Components
 
 - `src/server.js` is a loopback-only static server and narrow verification API.
-- `src/lib/provenance-adapter.js` is the sole boundary to the Provenance core verifier.
+- `src/lib/provenance-adapter.js` is the sole boundary to the bundled, verification-only independent verifier.
 - `public/` is a dependency-free interface. It receives verified, JSON-safe records and never receives a write capability.
 - Search is performed in browser memory and is non-authoritative.
 - Export packages exact source bytes; it does not rewrite `.g9p` evidence.
 
 ## Dependency rule
 
-Permitted core imports are verification, decoding and trust-evaluation APIs. Imports from core write, custody, connector, ingestion, ledger service or administration modules are prohibited.
-
-The development adapter resolves a sibling checkout or `G9P_CORE_PATH`. Public releases must instead consume an exact version of a minimal verifier package and verify compatibility through shared conformance fixtures.
+The bundled verifier is sourced from the independently implemented verifier in the signed Provenance•9 `v0.1.0-alpha.2` release. Writer, custody, connector, ingestion and administration modules are prohibited. The source and compatibility record is maintained in [VERIFIER-PROVENANCE.md](VERIFIER-PROVENANCE.md).
 
 ## Ordering
 
